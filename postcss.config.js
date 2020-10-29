@@ -1,14 +1,19 @@
-// only needed if you want to purge
-const purgecss = require("@fullhuman/postcss-purgecss")({
-  content: ["./src/**/*.svelte", "./src/**/*.html"],
-  defaultExtractor: content => content.match(/[A-Za-z0-9-_:/]+/g) || []
+// postcss.config.js
+
+const tailwind = require('tailwindcss');
+const autoprefixer = require('autoprefixer');
+const cssnano = require('cssnano');
+const postcssImport = require('postcss-import');
+const presetEnv = require('postcss-preset-env')({
+  features: {
+    // enable nesting
+    'nesting-rules': true,
+  },
 });
 
-module.exports = {
-  plugins: [
-    require("tailwindcss"),
+const plugins =
+  process.env.NODE_ENV === 'production'
+    ? [postcssImport, tailwind, presetEnv, cssnano]
+    : [postcssImport, tailwind, presetEnv];
 
-    // only needed if you want to purge
-    ...(process.env.NODE_ENV === "production" ? [purgecss] : [])
-  ]
-};
+module.exports = { plugins };
